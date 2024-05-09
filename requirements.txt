@@ -1,0 +1,5 @@
+boto3==1.34.23
+typer==0.9.0
+pyfiglet==1.0.2
+rich==13.7.0
+pyyaml==6.0.1

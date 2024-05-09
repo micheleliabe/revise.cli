@@ -1,0 +1,18 @@
+logs:
+  enabled: true
+
+finders:
+  aws:
+    costs:
+      gp2Volumes: true
+      detachedVolumes: true
+      volumesOnStoppedInstances: true
+      unusedElasticIps: true
+      oldSnapshots:
+        enabled: true
+        daysOfRetention: 10
+
+    security:
+      insecureSecurityGroups: true
+      rdsInstancePubliclyAccessible: true
+      s3BucketNoPublicAccessBlock: true
