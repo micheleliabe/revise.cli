@@ -224,6 +224,42 @@ class EC2Finder:
         except Exception as e:
             print(f"Error retrieving public egress rules in {region}: {e}")
 
-
 class S3Finder:
-    def 
+    def get_buckets_not_public_acess_block(self):
+        """
+        Retrieves information about all buckets that do not have public access block enabled in the specified AWS region.
+
+        Args:
+            region (str): The AWS region to retrieve the buckets from.
+
+        Returns:
+            list: A list of dictionaries containing information about the buckets.
+        """
+        # Initialize S3 client for the specified region
+        client = boto3.client('s3')
+
+        try:
+            # Get all buckets
+            response = client.list_buckets()
+
+            # Extract relevant information for each bucket
+            buckets = []
+            public_buckets = []
+            
+            for bucket in response["Buckets"]:
+                buckets.append(bucket["Name"])
+
+            for bucket in buckets:
+                try:
+                    client.get_public_access_block(
+                        Bucket=bucket
+                    )
+                    continue
+                except:
+                    public_buckets.append({"Bucket": bucket, "Public": "True"})
+
+            return public_buckets
+
+        except Exception as e:
+            print(f"Error retrieving buckets not public access block in {region}: {e}")
+            sys.exit()

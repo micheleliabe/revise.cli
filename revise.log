@@ -322,3 +322,16 @@ GET - GP2 volumes on us-east-2 finished!
 [2024-05-05 15:54:27] {'Region': 'us-east-1', 'GroupId': 'sg-0c146d92bfd20f950', 'GroupName': 'docker-swarm', 'VpcId': 'vpc-c59600b8'}
 [2024-05-05 15:54:27] {'Region': 'us-east-1', 'GroupId': 'sg-003745f94dafb652d', 'GroupName': 'chappie', 'VpcId': 'vpc-c59600b8'}
 [2024-05-05 15:54:27] {'Region': 'us-east-1', 'GroupId': 'sg-03e2c7dba47b51c42', 'GroupName': 'wp_bastion', 'VpcId': 'vpc-053d4cb279b4bf552'}
+[2024-05-10 20:18:40] GET - GP2 volumes on all started!
+[2024-05-10 21:50:00] GET - Buckets not public access blocked on all started!
+[2024-05-10 21:56:27] GET - Buckets not public access block on account started!
+[2024-05-10 21:57:09] GET - Buckets not public access block on account started!
+[2024-05-10 21:57:24] GET - Buckets not public access block on account finished!
+[2024-05-10 21:58:56] GET - Buckets not public access block started!
+[2024-05-10 21:59:10] GET - Buckets not public access block on account finished!
+[2024-05-10 22:04:36] GET - Buckets not public access block started!
+[2024-05-10 22:04:50] GET - Buckets not public access block on account finished!
+[2024-05-10 22:06:37] GET - Buckets not public access block started!
+[2024-05-10 22:06:50] GET - Buckets not public access block on account finished!
+[2024-05-10 22:08:24] GET - Buckets not public access block started!
+[2024-05-10 22:08:37] GET - Buckets not public access block on account finished!

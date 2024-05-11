@@ -2,16 +2,13 @@ import json
 import boto3
 
 from utils.logger import log
-
 from rich.console import Console
 from rich.table import Table, box
-
 from AWS.finder import EC2Finder
-
+from AWS.finder import S3Finder
 
 # Initialize Rich Console for better terminal output formatting
 console = Console()
-
 
 class AWSRecommendations():
 
@@ -252,6 +249,7 @@ class AWSSecurityChecker:
         """
         self.regions_iterator = AWSRegionsIterator(regions)
         self.ec2_finder = EC2Finder()
+        self.s3_finder = S3Finder()
 
     def get_security_groups_public_egress(self):
         """
@@ -267,6 +265,28 @@ class AWSSecurityChecker:
             "Security Groups with Public Egress Rules",
             "Remove public egress rules to improve security.",
             "https://docs.aws.amazon.com/pt_br/vpc/latest/userguide/security-group-rules.html",
+            data
+        )
+
+        recommendation.show_recommendations()
+        return data
+
+    def get_buckets_not_public_acess_block(self):
+        """
+        Retrieves information about all buckets that are not public access blocked in the specified AWS regions.
+
+        Returns:
+            list: A list of data about the buckets that are not public access blocked.
+        """
+        log.info(f"GET - Buckets not public access block started!")
+        with console.status(f"GET - Buckets not public access block", spinner="aesthetic"):        
+            data = self.s3_finder.get_buckets_not_public_acess_block()
+        log.info(f"GET - Buckets not public access block on account finished!")
+
+        recommendation = AWSRecommendations(
+            "Buckets that are not public access blocked",
+            "Check if public access blocking can be enabled on the bucket",
+            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
             data
         )
 

@@ -3,9 +3,7 @@ import typer
 from typing_extensions import Annotated
 from rich.console import Console
 from common import config
-
 from AWS.recommendations import AWSSecurityChecker, AWSCostChecker
-
 
 # Initialize Rich Console for better terminal output formatting
 console = Console()
@@ -13,11 +11,10 @@ console = Console()
 # Create a Typer application instance
 app = typer.Typer()
 
+#Load config file
 config = config.load_configs()
 
 # Define a command to fetch AWS cost recommendations
-
-
 @app.command()
 def costs(regions: Annotated[str, typer.Option(help='A string with the list of regions to scan. Exemple: "us-east-1 us-east-2 sa-east-1"')] = "all"):
     """
@@ -54,6 +51,11 @@ def get(resource, regions: Annotated[str, typer.Option(help='A string with the l
         case "public-egress-rules":
             aws_security_checker = AWSSecurityChecker(regions)
             aws_security_checker.get_security_groups_public_egress()
+            
+        case "buckets-not-public-acess-block":
+            aws_security_checker = AWSSecurityChecker(regions)
+            aws_security_checker.get_buckets_not_public_acess_block()
+        
         case _:
             console.print("Invalid")
 
