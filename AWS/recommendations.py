@@ -6,6 +6,7 @@ from rich.console import Console
 from rich.table import Table, box
 from AWS.finder import EC2Finder
 from AWS.finder import S3Finder
+from AWS.commom import RegionsFinder
 
 # Initialize Rich Console for better terminal output formatting
 console = Console()
@@ -77,17 +78,18 @@ class AWSRegionsIterator:
     """
     Iterates over a set of AWS regions and executes a given function for each region.
     """
-
+    
     def __init__(self, regions_string):
         """
         Initializes the AWSRegionsIterator with a string of region names.
 
         Args:
             regions_string (str): A space-separated string of AWS region names.
-        """
-        self.regions = regions_string.split(" ")
+        """     
+        self.regions = regions_string.split(" ")        
         self.regions = set(self.regions)
-
+        
+        
     def execute(self, func, operation, *args):
         """
         Executes the given function for each AWS region and returns the results.
