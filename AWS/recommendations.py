@@ -71,8 +71,6 @@ class AWSRecommendations():
         # Add a newline after printing the table
         console.print()
         console.print()
-        console.print()
-        console.print()
 
 
 class AWSRegionsIterator:
