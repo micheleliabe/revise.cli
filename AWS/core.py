@@ -20,9 +20,22 @@ def costs(regions: Annotated[str, typer.Option(help='A string with the list of r
     """
     Retrieves cost recommendations for the specified AWS regions.
     """
+
     aws_cost_checker = AWSCostChecker(regions)
     aws_cost_checker.get_gp2_volumes()
 
+    aws_cost_checker = AWSCostChecker(regions)
+    aws_cost_checker.get_volumes_on_stopped_instances()
+
+    aws_cost_checker = AWSCostChecker(regions)
+    aws_cost_checker.get_detached_volumes()
+    
+    aws_cost_checker = AWSCostChecker(regions)
+    aws_cost_checker.get_detached_ips()    
+
+    aws_cost_checker = AWSCostChecker(regions)
+    snapshot_retention = config["finders"]["aws"]["costs"]["oldSnapshots"]["daysOfRetention"]
+    aws_cost_checker.get_old_snapshots(snapshot_retention)
 
 @app.command()
 def get(resource, regions: Annotated[str, typer.Option(help='A string with the list of regions to scan. Exemple: "us-east-1 us-east-2 sa-east-1"')] = "all"):
