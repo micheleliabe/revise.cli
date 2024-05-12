@@ -6,6 +6,7 @@ from rich.console import Console
 from rich.table import Table, box
 from AWS.finder import EC2Finder
 from AWS.finder import S3Finder
+from AWS.finder import RDSFinder
 from AWS.commom import RegionsFinder
 
 # Initialize Rich Console for better terminal output formatting
@@ -261,7 +262,8 @@ class AWSSecurityChecker:
         self.regions_iterator = AWSRegionsIterator(regions)
         self.ec2_finder = EC2Finder()
         self.s3_finder = S3Finder()
-
+        self.rds_finder = RDSFinder()
+        
     def get_security_groups_public_egress(self):
         """
         Retrieves information about all public egress rules in the specified AWS regions.
@@ -276,6 +278,26 @@ class AWSSecurityChecker:
             "Security Groups with Public Egress Rules",
             "Remove public egress rules to improve security.",
             "https://docs.aws.amazon.com/pt_br/vpc/latest/userguide/security-group-rules.html",
+            data
+        )
+
+        recommendation.show_recommendations()
+        return data
+
+    def get_rds_instance_publicly_accessible(self):
+        """
+        Retrieves information about all RDS instances that are publicly accessible in the specified AWS regions.
+
+        Returns:
+            list: A list of data about the RDS instances that are publicly accessible.
+        """
+        data = self.regions_iterator.execute(
+            self.rds_finder.get_rds_instance_publicly_accessible, "GET - RDS instances that are publicly accessible")
+
+        recommendation = AWSRecommendations(
+            "RDS Instances that are Publicly Accessible",
+            "Remove public access from RDS instances to improve security.",
+            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
             data
         )
 

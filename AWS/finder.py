@@ -224,6 +224,34 @@ class EC2Finder:
         except Exception as e:
             print(f"Error retrieving public egress rules in {region}: {e}")
 
+class RDSFinder:
+    def get_rds_instance_publicly_accessible(self, region: str):
+        """
+        Retrieves information about all RDS instances that are publicly accessible in the specified AWS region.
+
+        Args:
+            region (str): The AWS region to retrieve the RDS instances from.
+
+        Returns:
+            list: A list of dictionaries containing information about the RDS instances.
+        """
+        client = boto3.client("rds", region_name=region)
+
+        # Describe RDS instances
+        response = client.describe_db_instances()
+        db_instances = []
+
+        # Extract RDS instances that are publicly accessible
+        for instance in response["DBInstances"]:
+            if instance["PubliclyAccessible"] == True:
+                db_instances.append({
+                    "Region": region,
+                    "DBInstanceIdentifier": instance["DBInstanceIdentifier"],
+                    "PubliclyAccessible": str(instance["PubliclyAccessible"])
+                })
+
+        return db_instances        
+
 class S3Finder:
     def get_buckets_not_public_acess_block(self):
         """

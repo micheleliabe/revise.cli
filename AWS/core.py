@@ -20,20 +20,13 @@ def costs(regions: Annotated[str, typer.Option(help='A string with the list of r
     """
     Retrieves cost recommendations for the specified AWS regions.
     """
-    aws_cost_checker = AWSCostChecker(regions)
-    aws_cost_checker.get_gp2_volumes()
-
-    aws_cost_checker = AWSCostChecker(regions)
-    aws_cost_checker.get_volumes_on_stopped_instances()
-
-    aws_cost_checker = AWSCostChecker(regions)
-    aws_cost_checker.get_detached_volumes()
-    
-    aws_cost_checker = AWSCostChecker(regions)
-    aws_cost_checker.get_detached_ips()    
-
-    aws_cost_checker = AWSCostChecker(regions)
     snapshot_retention = config["finders"]["aws"]["costs"]["oldSnapshots"]["daysOfRetention"]
+    aws_cost_checker = AWSCostChecker(regions)
+    
+    aws_cost_checker.get_gp2_volumes()
+    aws_cost_checker.get_volumes_on_stopped_instances()
+    aws_cost_checker.get_detached_volumes()
+    aws_cost_checker.get_detached_ips()    
     aws_cost_checker.get_old_snapshots(snapshot_retention)
 
 @app.command()
@@ -43,43 +36,41 @@ def security(regions: Annotated[str, typer.Option(help='A string with the list o
     """
     aws_security_checker = AWSSecurityChecker(regions)
     aws_security_checker.get_security_groups_public_egress()
-
-    aws_security_checker = AWSSecurityChecker(regions)
     aws_security_checker.get_buckets_not_public_acess_block()
-
-
+    aws_security_checker.get_rds_instance_publicly_accessible()
+    
 @app.command()
 def get(resource, regions: Annotated[str, typer.Option(help='A string with the list of regions to scan. Exemple: "us-east-1 us-east-2 sa-east-1"')] = "all"):
+    
+    aws_cost_checker = AWSCostChecker(regions)
+    aws_security_checker = AWSSecurityChecker(regions)    
+    
     match resource:
         case "gp2-volumes":
-            aws_cost_checker = AWSCostChecker(regions)
             aws_cost_checker.get_gp2_volumes()
 
         case "volumes-on-stopped-instances":
-            aws_cost_checker = AWSCostChecker(regions)
             aws_cost_checker.get_volumes_on_stopped_instances()
 
         case "detached-volumes":
-            aws_cost_checker = AWSCostChecker(regions)
             aws_cost_checker.get_detached_volumes()
 
         case "detached-ips":
-            aws_cost_checker = AWSCostChecker(regions)
             aws_cost_checker.get_detached_ips()
 
         case "old-snapshots":
-            aws_cost_checker = AWSCostChecker(regions)
             snapshot_retention = config["finders"]["aws"]["costs"]["oldSnapshots"]["daysOfRetention"]
             aws_cost_checker.get_old_snapshots(snapshot_retention)
 
         case "public-egress-rules":
-            aws_security_checker = AWSSecurityChecker(regions)
             aws_security_checker.get_security_groups_public_egress()
             
         case "buckets-not-public-acess-block":
-            aws_security_checker = AWSSecurityChecker(regions)
             aws_security_checker.get_buckets_not_public_acess_block()
         
+        case "rds-publicly-accessible":
+            aws_security_checker.get_rds_instance_publicly_accessible()
+            
         case _:
             console.print("Invalid")
 
