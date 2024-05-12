@@ -236,22 +236,23 @@ class RDSFinder:
             list: A list of dictionaries containing information about the RDS instances.
         """
         client = boto3.client("rds", region_name=region)
+        try:
+            # Describe RDS instances
+            response = client.describe_db_instances()
+            db_instances = []
 
-        # Describe RDS instances
-        response = client.describe_db_instances()
-        db_instances = []
+            # Extract RDS instances that are publicly accessible
+            for instance in response["DBInstances"]:
+                if instance["PubliclyAccessible"] == True:
+                    db_instances.append({
+                        "Region": region,
+                        "DBInstanceIdentifier": instance["DBInstanceIdentifier"],
+                        "PubliclyAccessible": str(instance["PubliclyAccessible"])
+                    })
 
-        # Extract RDS instances that are publicly accessible
-        for instance in response["DBInstances"]:
-            if instance["PubliclyAccessible"] == True:
-                db_instances.append({
-                    "Region": region,
-                    "DBInstanceIdentifier": instance["DBInstanceIdentifier"],
-                    "PubliclyAccessible": str(instance["PubliclyAccessible"])
-                })
-
-        return db_instances        
-
+            return db_instances        
+        except Exception as e:
+            print(f"Error retrieving RDS instances in {region}: {e}")
 class S3Finder:
     def get_buckets_not_public_acess_block(self):
         """

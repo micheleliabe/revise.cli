@@ -296,8 +296,8 @@ class AWSSecurityChecker:
 
         recommendation = AWSRecommendations(
             "RDS Instances that are Publicly Accessible",
-            "Remove public access from RDS instances to improve security.",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "Even though public access is granted only through rules in the security group, we recommend keeping this option disabled if the database doesn't need to be accessible via the internet.",
+            "https://docs.aws.amazon.com/pt_br/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Hiding",
             data
         )
 
