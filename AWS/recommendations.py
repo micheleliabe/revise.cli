@@ -79,15 +79,19 @@ class AWSRegionsIterator:
     Iterates over a set of AWS regions and executes a given function for each region.
     """
     
-    def __init__(self, regions_string):
+    def __init__(self, regions):
         """
         Initializes the AWSRegionsIterator with a string of region names.
 
         Args:
             regions_string (str): A space-separated string of AWS region names.
         """     
-        self.regions = regions_string.split(" ")        
-        self.regions = set(self.regions)
+        if type(regions) == list:
+            self.regions = regions
+            
+        elif type(regions) == str:
+            self.regions = regions.split(" ")
+            self.regions = set(self.regions)
         
         
     def execute(self, func, operation, *args):
@@ -126,6 +130,10 @@ class AWSCostChecker:
         Args:
             regions (str): A space-separated string of AWS region names.
         """
+
+        if regions == "all":
+            regions = RegionsFinder().get_available_regions()
+            
         self.regions_iterator = AWSRegionsIterator(regions)
         self.ec2_finder = EC2Finder()
 
@@ -247,6 +255,9 @@ class AWSSecurityChecker:
         Args:
             regions (str): A space-separated string of AWS region names.
         """
+        if regions == "all":
+            regions = RegionsFinder().get_available_regions()
+                    
         self.regions_iterator = AWSRegionsIterator(regions)
         self.ec2_finder = EC2Finder()
         self.s3_finder = S3Finder()
