@@ -12,14 +12,14 @@ Revise.cli é uma ferramenta de linha de comando robusta e versátil, projetada 
 ## Funcionalidades
 A seguir estão algumas das principais funcionalidades oferecidas pelo Revise.cli:
 
-- **Localização de Volumes GP2**
-- **Identificação de Elastic IPs Não Utilizados**
-- **Identificação de Volumes EBS Não Utilizados**
+- **Localização de volumes GP2**
+- **Identificação de elastic IPs não utilizados**
+- **Identificação de volumes EBS Não utilizados**
 - **Identificação de Volumes EBS em Instâncias EC2 Pausadas**
-- **Verificação de Bancos de Dados RDS com Acesso Público Ativado**
-- **Localização de Grupos de Segurança com Regras de Entrada Públicas**
-- **Identificação de Buckets S3 com Bloqueio de Acesso Público Desativado**
-- **Identificação de Snapshots Antigos**
+- **Verificação de bancos de dados RDS com acesso público ativado**
+- **Localização de grupos de segurança com regras de entrada públicas**
+- **Identificação de buckets S3 com bloqueio de acesso público desativado**
+- **Identificação de snapshots antigos**
 
 ## Documentação
 A documentação da aplicação está em desenvolvimento e ficará disponível em breve.
