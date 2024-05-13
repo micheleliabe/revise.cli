@@ -4,7 +4,7 @@
 Michel Eliabe Moreira Dias
 
 ## Suporte
-Para qualquer dúvida ou assistência, entre em contato através do email: micheldias.cloud@gmail.com
+Para qualquer dúvida ou sugestão, entre em contato através do email: micheldias.cloud@gmail.com
 
 ## Descrição da Aplicação
 Revise.cli é uma ferramenta de linha de comando robusta e versátil, projetada para analisar e otimizar ambientes hospedados na AWS (Amazon Web Services). Com uma variedade de recursos, a aplicação visa facilitar a identificação de oportunidades de melhoria, especialmente no que diz respeito a custos e segurança.
