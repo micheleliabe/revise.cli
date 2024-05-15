@@ -7,7 +7,7 @@ finders:
       gp2Volumes: true
       detachedVolumes: true
       volumesOnStoppedInstances: true
-      unusedElasticIps: true
+      detachedIps: true
       oldSnapshots:
         enabled: true
         daysOfRetention: 10
