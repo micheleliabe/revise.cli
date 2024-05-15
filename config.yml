@@ -10,7 +10,7 @@ finders:
       detachedIps: true
       oldSnapshots:
         enabled: true
-        daysOfRetention: 10
+        daysOfRetention: 30
 
     security:
       insecureSecurityGroups: true
