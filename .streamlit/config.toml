@@ -1,0 +1,10 @@
+[client]
+showErrorDetails = false
+toolbarMode = "viewer"
+
+[theme]
+primaryColor="#0d1b2a"
+backgroundColor="#e0e1dd"
+secondaryBackgroundColor="778da9"
+textColor="#1b263b"
+font="sans serif"

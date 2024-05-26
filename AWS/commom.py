@@ -23,3 +23,15 @@ class RegionsFinder:
         regions = [region['RegionName'] for region in response.get('Regions', [])]
 
         return regions
+    
+class Account:
+    def get_account_id(self):
+        """
+        Retrieves the AWS account ID of the current user.
+
+        Returns:
+            str: The AWS account ID.
+        """
+        sts_client = boto3.client('sts')
+        account_id = sts_client.get_caller_identity()['Account']
+        return account_id

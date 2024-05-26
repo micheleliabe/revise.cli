@@ -8,7 +8,7 @@ from pyfiglet import Figlet
 from common import config
 from utils import logger
 from AWS.core import app as aws
-
+from subprocess import call
 revise_version = "0.1"
 
 # Initialize Rich Console for better terminal output formatting
@@ -61,8 +61,16 @@ def config():
     console.print()
     synstax = Syntax(config_yaml, "yaml", theme="github-dark")
     console.print(synstax)
-
-
+    
+@app.command()
+def dashboard():
+    """
+    GET Revise CLI Dashboard.
+    """
+    console.print("Revise Dashboard:")
+    console.print()
+    console.print("Coming soon...")
+    call(["streamlit", "run", "dashboard.py"])
     # Entry point of the script
 if __name__ == "__main__":
     app()

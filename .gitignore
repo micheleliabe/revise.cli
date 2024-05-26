@@ -2,6 +2,7 @@
 *.pyc
 __pycache__/
 # Environments
+.venv/
 venv/
 
 # IDE files
@@ -10,3 +11,5 @@ venv/
 
 #log files
 *.log
+
+data.json

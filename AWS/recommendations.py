@@ -80,13 +80,14 @@ class AWSRegionsIterator:
     Iterates over a set of AWS regions and executes a given function for each region.
     """
     
-    def __init__(self, regions):
+    def __init__(self, regions, account):
         """
         Initializes the AWSRegionsIterator with a string of region names.
 
         Args:
             regions_string (str): A space-separated string of AWS region names.
-        """     
+        """ 
+        self.account = account    
         if type(regions) == list:
             self.regions = regions
             
@@ -108,12 +109,12 @@ class AWSRegionsIterator:
         """
         results = []
         for region in self.regions:
-            log.info(f"{operation} on {region} started!")
+            log.info(f"Account: {self.account} | {operation} on {region} started!")
 
-            with console.status(f"{operation} on {region}", spinner="aesthetic"):
+            with console.status(f"Account: {self.account} | {operation} on {region}!", spinner="aesthetic"):
                 data = func(region, *args)
 
-            log.info(f"{operation} on {region} finished!")
+            log.info(f"Account: {self.account} | {operation} on {region} finished!")
 
             if data:
                 for region_itens in data:
@@ -124,18 +125,20 @@ class AWSRegionsIterator:
 
 
 class AWSCostChecker:
-    def __init__(self, regions):
+    
+    def __init__(self, regions, account, output="table"):
         """
         Initializes the AWSCostChecker with a list of AWS regions.
 
         Args:
             regions (str): A space-separated string of AWS region names.
         """
-
+        self.account = account
+        self.output = output
         if regions == "all":
             regions = RegionsFinder().get_available_regions()
             
-        self.regions_iterator = AWSRegionsIterator(regions)
+        self.regions_iterator = AWSRegionsIterator(regions, self.account)
         self.ec2_finder = EC2Finder()
 
     def get_gp2_volumes(self):
@@ -147,15 +150,16 @@ class AWSCostChecker:
         """
         data = self.regions_iterator.execute(
             self.ec2_finder.get_gp2_volumes, "GET - GP2 volumes")
+        
+        if self.output == "table":
+            recommendation = AWSRecommendations(
+                "Upgrade to EBS gp3 Volumes for Cost Savings and Better Performance!",
+                "We recommend migrating your AWS EBS gp2 volumes to gp3. gp3 volumes offer lower costs and enhanced performance. Refer to our documentation for guidance on transitioning.",
+                "https://aws.amazon.com/blogs/storage/migrate-your-amazon-ebs-volumes-from-gp2-to-gp3-and-save-up-to-20-on-costs/",
+                data
+            )
 
-        recommendation = AWSRecommendations(
-            "Upgrade to EBS gp3 Volumes for Cost Savings and Better Performance!",
-            "We recommend migrating your AWS EBS gp2 volumes to gp3. gp3 volumes offer lower costs and enhanced performance. Refer to our documentation for guidance on transitioning.",
-            "https://aws.amazon.com/blogs/storage/migrate-your-amazon-ebs-volumes-from-gp2-to-gp3-and-save-up-to-20-on-costs/",
-            data
-        )
-
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data
 
     def get_volumes_on_stopped_instances(self):
@@ -168,22 +172,23 @@ class AWSCostChecker:
         data = self.regions_iterator.execute(
             self.ec2_finder.get_volumes_on_stopped_instances, "GET - Volumes on stopped instances")
 
-        recommendation_text = """To avoid unnecessary charges for Amazon EBS storage when your (Amazon EC2) instances are stopped, consider the following steps:
+        if self.output == "table":
+            recommendation_text = """To avoid unnecessary charges for Amazon EBS storage when your (Amazon EC2) instances are stopped, consider the following steps:
 
-    1. Take snapshots of unused EBS volumes to preserve data.
-    2. Delete active EBS volumes that are not currently needed.
-    3. Utilize EBS snapshots, which are billed at a lower rate, to retain stored information for future use.
-    4. When necessary, replace EBS volumes with the stored snapshots to reduce costs while maintaining data availability.
-"""
+        1. Take snapshots of unused EBS volumes to preserve data.
+        2. Delete active EBS volumes that are not currently needed.
+        3. Utilize EBS snapshots, which are billed at a lower rate, to retain stored information for future use.
+        4. When necessary, replace EBS volumes with the stored snapshots to reduce costs while maintaining data availability.
+    """
 
-        recommendation = AWSRecommendations(
-            "EBS Charges for Stopped EC2 Instances",
-            recommendation_text,
-            "https://aws.amazon.com/blogs/storage/migrate-your-amazon-ebs-volumes-from-gp2-to-gp3-and-save-up-to-20-on-costs/",
-            data
-        )
+            recommendation = AWSRecommendations(
+                "EBS Charges for Stopped EC2 Instances",
+                recommendation_text,
+                "https://aws.amazon.com/blogs/storage/migrate-your-amazon-ebs-volumes-from-gp2-to-gp3-and-save-up-to-20-on-costs/",
+                data
+            )
 
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data
 
     def get_detached_volumes(self):
@@ -196,14 +201,15 @@ class AWSCostChecker:
         data = self.regions_iterator.execute(
             self.ec2_finder.get_detached_volumes, "GET - Detached volumes")
 
-        recommendation = AWSRecommendations(
-            "Unused EBS Volumes",
-            "AWS suggests taking snapshots of detached volumes and then deleting them to reduce costs.",
-            "https://docs.aws.amazon.com/pt_br/ebs/latest/userguide/ebs-detaching-volume.html",
-            data
-        )
+        if self.output == "table":
+            recommendation = AWSRecommendations(
+                "Unused EBS Volumes",
+                "AWS suggests taking snapshots of detached volumes and then deleting them to reduce costs.",
+                "https://docs.aws.amazon.com/pt_br/ebs/latest/userguide/ebs-detaching-volume.html",
+                data
+            )
 
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data
 
     def get_detached_ips(self):
@@ -216,15 +222,15 @@ class AWSCostChecker:
 
         data = self.regions_iterator.execute(
             self.ec2_finder.get_detached_ips, "GET - Detached IP addresses")
+        if self.output == "table":
+            recommendation = AWSRecommendations(
+                "Unused Elastic IPs",
+                "Release detached IPs",
+                "https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/",
+                data
+            )
 
-        recommendation = AWSRecommendations(
-            "Unused Elastic IPs",
-            "Release detached IPs",
-            "https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/",
-            data
-        )
-
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data
 
     def get_old_snapshots(self, retention):
@@ -236,20 +242,20 @@ class AWSCostChecker:
         """
         data = self.regions_iterator.execute(
             self.ec2_finder.get_old_snapshots, "GET - Old snapshots", retention)
+        if self.output == "table":
+            recommendation = AWSRecommendations(
+                "Old Snapshots",
+                "Remove old snapshots and establish retention policies.",
+                "https://docs.aws.amazon.com/pt_br/ebs/latest/userguide/automating-snapshots.html",
+                data
+            )
 
-        recommendation = AWSRecommendations(
-            "Old Snapshots",
-            "Remove old snapshots and establish retention policies.",
-            "https://docs.aws.amazon.com/pt_br/ebs/latest/userguide/automating-snapshots.html",
-            data
-        )
-
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data
 
 
 class AWSSecurityChecker:
-    def __init__(self, regions):
+    def __init__(self, regions, account, output="table"):
         """
         Initializes the AWSSecurityChecker with a list of AWS regions.
 
@@ -259,7 +265,9 @@ class AWSSecurityChecker:
         if regions == "all":
             regions = RegionsFinder().get_available_regions()
                     
-        self.regions_iterator = AWSRegionsIterator(regions)
+        self.account = account
+        self.output = output
+        self.regions_iterator = AWSRegionsIterator(regions, self.account)
         self.ec2_finder = EC2Finder()
         self.s3_finder = S3Finder()
         self.rds_finder = RDSFinder()
@@ -273,15 +281,15 @@ class AWSSecurityChecker:
         """
         data = self.regions_iterator.execute(
             self.ec2_finder.get_security_groups_public_egress, "GET - Security groups with public egress rules")
+        if self.output == "table":
+            recommendation = AWSRecommendations(
+                "Security Groups with Public Egress Rules",
+                "Remove public egress rules to improve security.",
+                "https://docs.aws.amazon.com/pt_br/vpc/latest/userguide/security-group-rules.html",
+                data
+            )
 
-        recommendation = AWSRecommendations(
-            "Security Groups with Public Egress Rules",
-            "Remove public egress rules to improve security.",
-            "https://docs.aws.amazon.com/pt_br/vpc/latest/userguide/security-group-rules.html",
-            data
-        )
-
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data
 
     def get_rds_instance_publicly_accessible(self):
@@ -293,15 +301,15 @@ class AWSSecurityChecker:
         """
         data = self.regions_iterator.execute(
             self.rds_finder.get_rds_instance_publicly_accessible, "GET - RDS instances that are publicly accessible")
+        if self.output == "table":
+            recommendation = AWSRecommendations(
+                "RDS Instances that are Publicly Accessible",
+                "Even though public access is granted only through rules in the security group, we recommend keeping this option disabled if the database doesn't need to be accessible via the internet.",
+                "https://docs.aws.amazon.com/pt_br/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Hiding",
+                data
+            )
 
-        recommendation = AWSRecommendations(
-            "RDS Instances that are Publicly Accessible",
-            "Even though public access is granted only through rules in the security group, we recommend keeping this option disabled if the database doesn't need to be accessible via the internet.",
-            "https://docs.aws.amazon.com/pt_br/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Hiding",
-            data
-        )
-
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data
 
     def get_buckets_not_public_acess_block(self):
@@ -311,17 +319,18 @@ class AWSSecurityChecker:
         Returns:
             list: A list of data about the buckets that are not public access blocked.
         """
-        log.info(f"GET - Buckets not public access block started!")
-        with console.status(f"GET - Buckets not public access block", spinner="aesthetic"):        
+        log.info(f"Account: {self.account} | GET - Buckets not public access block started!")
+        with console.status(f"Account: {self.account} | GET - Buckets not public access block!", spinner="aesthetic"):        
             data = self.s3_finder.get_buckets_not_public_acess_block()
-        log.info(f"GET - Buckets not public access block on account finished!")
+        log.info(f"Account: {self.account} | GET - Buckets not public access block on account finished!")
 
-        recommendation = AWSRecommendations(
-            "Buckets that are not public access blocked",
-            "Check if public access blocking can be enabled on the bucket",
-            "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
-            data
-        )
+        if self.output == "table":
+            recommendation = AWSRecommendations(
+                "Buckets that are not public access blocked",
+                "Check if public access blocking can be enabled on the bucket",
+                "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html",
+                data
+            )
 
-        recommendation.show_recommendations()
+            recommendation.show_recommendations()
         return data

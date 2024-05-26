@@ -292,3 +292,4 @@ class S3Finder:
         except Exception as e:
             print(f"Error retrieving buckets not public access block in {region}: {e}")
             sys.exit()
+            
